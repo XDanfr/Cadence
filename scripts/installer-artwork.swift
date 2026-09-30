@@ -23,7 +23,7 @@ func text(_ value: String, top: Double, size: Double, weight: NSFont.Weight, col
 }
 func render(scale: Int, preview: Bool) -> NSBitmapImageRep {
     let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: Int(width) * scale, pixelsHigh: Int(height) * scale,
-        bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false, colorSpaceName: .sRGB,
+        bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false, colorSpaceName: .calibratedRGB,
         bytesPerRow: 0, bitsPerPixel: 0)!
     rep.size = NSSize(width: width, height: height)
     NSGraphicsContext.saveGraphicsState()
