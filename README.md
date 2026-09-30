@@ -16,12 +16,13 @@ Cadence is a native SwiftUI Pomodoro app for **macOS Sequoia (15) and later**, w
 - Apple's installed macOS alert sounds, volume control, preview, repeating alarm and dismissal.
 - Scheduled local notifications, optional keep-awake during focus and launch at login.
 - Apple Music play/pause through macOS Automation. Opens Music if it is not running. No Spotify integration yet.
+- Mac accent colour by default (Cadence purple for Multicolour), plus nine selectable accent colours across timer, background, controls and insights. Existing preferences and history are preserved.
 - System/light/dark appearance, reduced-transparency and reduced-motion support, VoiceOver labels, keyboard shortcuts.
 - Generated native app icon and universal `.app` packaging.
 
 ## Download and run
 
-Open the latest successful **Build Cadence** run in [Actions](https://github.com/XDanfr/Pomodoro/actions), download **Cadence-macOS**, extract the artifact and the enclosed ZIP, then move **Cadence.app** to Applications.
+Open the latest successful **Build Cadence** run in [Actions](https://github.com/XDanfr/Cadence/actions), download **Cadence-macOS**, extract the artifact and the enclosed ZIP, then move **Cadence.app** to Applications.
 
 Development builds are ad-hoc signed, **not Developer ID signed or notarised**. Gatekeeper may require approval in System Settings → Privacy & Security after attempting to open. Public distribution will need a Developer ID certificate and notarisation.
 
