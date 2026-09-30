@@ -28,7 +28,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         }
         MenuBarExtra {
             MenuPanel().environmentObject(model).tint(model.accentColor)
-        } label: { Label(model.running ? model.clock : "Cadence", systemImage: model.state.phase == .focus ? "timer" : "cup.and.saucer") }
+        } label: { Label(model.running ? model.clock : "Cadence", systemImage: "timer") }
         .menuBarExtraStyle(.window)
         Settings { SettingsView().environmentObject(model).tint(model.accentColor).frame(width: 540, height: 540) }
     }
@@ -65,7 +65,7 @@ struct Dashboard: View {
             }.allowsHitTesting(false)
             VStack(spacing: 22) {
                 HStack {
-                    Image(systemName: "waveform.path").font(.title2).foregroundStyle(accent)
+                    Image(systemName: "timer").font(.title2).foregroundStyle(accent)
                     Text("Cadence").font(.title2.weight(.semibold))
                     Spacer()
                     Picker("Page", selection: $tab) { Text("Timer").tag(0); Text("Insights").tag(1) }.pickerStyle(.segmented).labelsHidden().frame(width: 190)
