@@ -73,3 +73,21 @@ On Sequoia and Tahoe, install the packaged app in Applications. In first-run set
 Test onboarding replay with existing history and a partly completed timer. Confirm selected history resets include both custom dates and preserve records outside the range. Export a backup, then reset the entire app and relaunch: no timer/task/history should return, launch at login should be off, defaults should be restored, and onboarding should remain pending until completed or skipped. The legacy bundle's data must not be re-imported after resetting.
 
 The CI artifact **Cadence-notification-probe** records whether the native permission request returns an error or remains awaiting a user decision. It does not assert access was granted. To run the same probe locally (with Cadence closed), use `open dist/Cadence.app --args --notification-probe "$PWD/dist/notification-probe.txt"`. This explicitly requests notification permission and may show the macOS prompt; ordinary launches never run the probe.
+
+## DMG packaging and releases
+
+After `scripts/build.sh`, install `dmgbuild==1.6.7` and run:
+
+```sh
+python3 -m pip install dmgbuild==1.6.7
+bash scripts/package-dmg.sh
+bash scripts/verify-dmg.sh
+```
+
+The installer artwork is drawn with AppKit by `scripts/installer-artwork.swift`. It reads the current Icon Composer background stops, preserving Display P3 and sRGB colour spaces. The 800 × 500 point canvas has a 3-point purple border, a clean arrow and native Finder icons at (220, 244) and (580, 244). A multi-resolution TIFF supplies both 1× and 2× artwork. The icon locations and window settings live in `Resources/Installer/dmg-settings.py`.
+
+`dmgbuild` writes Finder metadata directly, so the styled layout does not depend on scripting Finder during packaging. The verification script mounts the finished image read-only, checks the app, Applications link, Finder metadata and signature, and captures its actual Finder window. CI uploads **Cadence-release-packages** (DMG, ZIP and SHA256SUMS.txt) and **Cadence-DMG-preview** (artwork and Finder screenshot).
+
+For a release, update the app version in `Resources/Info.plist`, update the About version as needed, merge the release changes, then push a matching tag such as `v1.0.0`. `release.yml` validates the tag, runs the same tested universal build and DMG packaging, and creates a **draft** GitHub Release with the versioned DMG, ZIP, checksums and installation notes. Review the notes and downloads before publishing the draft in GitHub. Existing releases are not overwritten automatically.
+
+No Apple account, Developer ID or notarisation secrets are needed. The app remains ad-hoc signed and the DMG is unsigned. Installation notes explain the per-app Gatekeeper approval. Packaging does not alter quarantine flags or system security settings.

@@ -1,8 +1,10 @@
 name: Build Cadence
 on:
   push:
+    branches: ["**"]
   pull_request:
   workflow_dispatch:
+  workflow_call:
 permissions:
   contents: read
 jobs:
@@ -39,6 +41,25 @@ jobs:
         env:
           CADENCE_COMPILED_ASSETS: dist/compiled-assets
         run: bash scripts/build.sh
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install disk image builder
+        run: python3 -m pip install dmgbuild==1.6.7
+      - name: Package and verify styled DMG
+        run: |
+          bash scripts/package-dmg.sh
+          bash scripts/verify-dmg.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Cadence-release-packages
+          path: dist/release/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Cadence-DMG-preview
+          path: dist/installer/
+          if-no-files-found: error
       - name: Smoke test app launch on Sequoia
         run: |
           open dist/Cadence.app
