@@ -21,7 +21,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         .windowStyle(.hiddenTitleBar)
         .commands {
             CommandGroup(after: .newItem) {
-                Button(model.running ? "Pause timer" : "Start timer") { model.toggle() }.keyboardShortcut(" ", modifiers: [])
+                Button(model.running ? "Pause timer" : "Start timer") { model.toggle() }.keyboardShortcut(.return, modifiers: .command)
                 Button("Reset interval") { model.reset() }.keyboardShortcut("r", modifiers: .command)
                 Button("Skip interval") { model.skip() }.keyboardShortcut("n", modifiers: [.command, .shift])
             }

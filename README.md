@@ -25,7 +25,7 @@ Open the latest successful **Build Cadence** run in [Actions](https://github.com
 
 Development builds are ad-hoc signed, **not Developer ID signed or notarised**. Gatekeeper may require approval in System Settings → Privacy & Security after attempting to open. Public distribution will need a Developer ID certificate and notarisation.
 
-Open Settings with **⌘,**. **Space** toggles the timer when not typing, **⌘R** resets, **⇧⌘N** skips. A reset discards current interval progress. Changing mode also discards current progress. Duration changes apply to the next interval (or reset); presets are available while paused.
+Open Settings with **⌘,**. **⌘Return** toggles the timer, **⌘R** resets, **⇧⌘N** skips. A reset discards current interval progress. Changing mode also discards current progress. Duration changes apply to the next interval (or reset); presets are available while paused.
 
 Allow notifications in Settings → Alerts. Focus modes may silence banners. The selected alarm plays through the app, using system output volume; notifications do not play a duplicate sound. Cadence must be running for its repeating alarm. When quit, a scheduled banner may still arrive, and reopening reconciles the elapsed interval. Keep-awake only prevents idle system sleep; it does not override lid closure or a manual sleep.
 
