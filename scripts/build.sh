@@ -24,7 +24,9 @@ python3 scripts/merge-asset-info.py
 swift scripts/export-icon-layers.swift
 test -s dist/Cadence.app/Contents/Resources/Assets.car
 test -s dist/Cadence.app/Contents/Resources/Cadence.icns
-codesign --force --deep --sign - dist/Cadence.app
+# A stable signing certificate can be supplied for local or distribution builds.
+# CI remains ad-hoc signed; a new ad-hoc build may have a different OS permission identity.
+codesign --force --sign "${CADENCE_SIGNING_IDENTITY:--}" --identifier me.xdan.Cadence dist/Cadence.app
 codesign --verify --deep --strict dist/Cadence.app
 plutil -lint dist/Cadence.app/Contents/Info.plist
 lipo -info dist/Cadence.app/Contents/MacOS/Cadence

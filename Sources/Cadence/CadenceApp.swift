@@ -4,7 +4,10 @@ import UserNotifications
 import CadenceCore
 
 final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
-    func applicationDidFinishLaunching(_ notification: Notification) { UNUserNotificationCenter.current().delegate = self }
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        UNUserNotificationCenter.current().delegate = self
+        NotificationProbe.startIfRequested()
+    }
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) { completionHandler([.banner]) }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
 }
@@ -12,7 +15,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var model = Model()
     var body: some Scene {
-        WindowGroup("Cadence", id: "main") {
+        Window("Cadence", id: "main") {
             Dashboard().environmentObject(model).tint(model.accentColor)
                 .preferredColorScheme(model.preferences.appearance == "Dark" ? .dark : model.preferences.appearance == "Light" ? .light : nil)
                 .frame(minWidth: 820, minHeight: 620)
@@ -88,6 +91,9 @@ struct Dashboard: View {
                     Text("⌘R reset · ⇧⌘N skip").font(.caption).foregroundStyle(.tertiary)
                 }
             }.padding(30)
+        }
+        .sheet(isPresented: $model.showOnboarding) {
+            OnboardingView(preferences: model.preferences).environmentObject(model)
         }
         .tint(accent)
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.3), value: model.state.phase)
