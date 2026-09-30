@@ -80,7 +80,8 @@ struct Dashboard: View {
                     .scrollIndicators(.hidden)
                     // Keep card shadows inside the scroll viewport, while
                     // retaining the same visible card positions and widths.
-                    .padding(-timerShadowInset)
+                    .padding(.horizontal, -timerShadowInset)
+                    .padding(.top, -timerShadowInset)
                 } else { InsightsView() }
                 HStack {
                     Spacer()
