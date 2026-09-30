@@ -22,4 +22,6 @@ text_size = 14
 label_pos = "bottom"
 arrange_by = None
 icon_locations = {"Cadence.app": (220, 244), "Applications": (580, 244)}
-hide_extensions = ["Cadence.app"]
+# Do not set FinderInfo on the signed app to hide its extension: codesign rejects it.
+# Finder's normal application-name display keeps bundle naming intact.
+hide_extensions = []
