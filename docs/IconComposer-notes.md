@@ -39,9 +39,9 @@ The current `.icns` has a baked rounded rectangle, not Apple's dynamic Liquid Gl
 
 ## Appearance handoff
 
-Create Default and Dark variants (and preview Mono/clear/tinted as desired) in Icon Composer, using its appearance controls. The old `.icns` is a single rendered appearance; the app does not yet compile a `.icon` package or expose an icon-appearance override.
+Create Default and Dark variants (and preview Mono/clear/tinted as desired) in Icon Composer, using its appearance controls. The original generated `.icns` was a single rendered appearance. The supplied `Resources/Cadence.icon` now contains the layered design and a dark foreground override, compiled with the accent asset into `Assets.car` and a legacy `.icns`. System icon appearance selects the supported variants; Cadence does not force an icon appearance through its in-app colour setting.
 
-Once the `.icon` is ready, add it to `Resources/` and update packaging to compile it with Apple's asset tooling. Keep a pre-Tahoe `.icns` fallback and test both Sequoia and Tahoe. Merely copying the `.icon` directory into the app bundle is not enough to adopt the layered icon.
+Packaging compiles the `.icon` with Apple's asset tooling and merges its generated plist entries into the app's Info.plist. The deployment target is 15.0 so the compiler generates a legacy icon for Sequoia. `scripts/icon.swift` remains only as a reference for the earlier design, and is not used by the app build.
 
 References:
 - https://developer.apple.com/icon-composer/

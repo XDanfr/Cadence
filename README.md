@@ -1,5 +1,7 @@
 # Cadence
 
+<img src="docs/images/cadence-icon.png" width="128" alt="Cadence app icon: a purple glass timer on a lavender and cyan background">
+
 A little structure. A lot of breathing room.
 
 Cadence is a native SwiftUI Pomodoro app for **macOS Sequoia (15) and later**, with native Liquid Glass on **Tahoe (26)** and a translucent material fallback on Sequoia. Built for Apple silicon and Intel Macs. No third-party dependencies, account, telemetry or server.
@@ -20,7 +22,7 @@ Cadence is a native SwiftUI Pomodoro app for **macOS Sequoia (15) and later**, w
 - Apple Music play/pause through macOS Automation. Opens Music if it is not running. No Spotify integration yet.
 - Mac accent colour by default (Cadence purple for Multicolour), plus nine selectable accent colours across timer, background, controls and insights. Existing preferences and history are preserved.
 - System/light/dark appearance, reduced-transparency and reduced-motion support, VoiceOver labels, keyboard shortcuts.
-- Generated native app icon and universal `.app` packaging.
+- Layered Icon Composer app icon with appearance variants, a compiler-generated Sequoia fallback, and universal `.app` packaging.
 
 ## Download and run
 

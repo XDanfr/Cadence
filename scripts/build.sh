@@ -10,10 +10,15 @@ for arch in arm64 x86_64; do
 done
 lipo -create dist/Cadence-arm64 dist/Cadence-x86_64 -output dist/Cadence.app/Contents/MacOS/Cadence
 cp Resources/Info.plist dist/Cadence.app/Contents/Info.plist
-xcrun actool Resources/Colors.xcassets --compile dist/Cadence.app/Contents/Resources --platform macosx --minimum-deployment-target 15.0 --output-partial-info-plist dist/asset-info.plist
-swift scripts/icon.swift
+xcrun actool Resources/Colors.xcassets Resources/Cadence.icon \
+  --compile dist/Cadence.app/Contents/Resources \
+  --platform macosx --target-device mac --minimum-deployment-target 15.0 \
+  --app-icon Cadence --accent-color AccentColor \
+  --enable-on-demand-resources NO --output-partial-info-plist dist/asset-info.plist
+python3 scripts/merge-asset-info.py
 swift scripts/export-icon-layers.swift
-iconutil -c icns dist/AppIcon.iconset -o dist/Cadence.app/Contents/Resources/AppIcon.icns
+test -s dist/Cadence.app/Contents/Resources/Assets.car
+test -s dist/Cadence.app/Contents/Resources/Cadence.icns
 codesign --force --deep --sign - dist/Cadence.app
 codesign --verify --deep --strict dist/Cadence.app
 plutil -lint dist/Cadence.app/Contents/Info.plist
