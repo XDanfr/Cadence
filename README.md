@@ -38,7 +38,7 @@ The Music button asks for Automation permission on first use. Controls Music onl
 
 ## Build
 
-Requires Xcode 26.3 with the macOS 26 SDK to compile Liquid Glass. The deployment target remains **15.0**; newer APIs are availability-guarded.
+Requires Xcode 26.3 or later with the macOS 26 SDK to compile Liquid Glass. Rendering the layered Icon Composer assets also requires a Tahoe build host; CI compiles those assets on `macos-26`, then builds and smoke-tests the app on `macos-15`. On a Sequoia build host, download the `Cadence-compiled-assets` artifact from a successful run and set `CADENCE_COMPILED_ASSETS` to its extracted directory when invoking `scripts/build.sh`. The deployment target remains **15.0**; newer APIs are availability-guarded.
 
 ```sh
 swift test
@@ -48,7 +48,7 @@ open dist/Cadence.app
 
 You can also open `Package.swift` in Xcode. For notifications, automation permissions and login items, run the packaged `.app`, rather than the bare Swift Package executable.
 
-GitHub Actions runs tests, builds both architectures on `macos-15`, validates the bundle/signature, smoke-tests launch on Sequoia, and uploads a ZIP. No signing secrets are needed for development builds.
+GitHub Actions compiles the layered icon on `macos-26`, runs tests and builds both architectures on `macos-15`, validates the bundle/signature, smoke-tests launch on Sequoia, and uploads a ZIP. No signing secrets are needed for development builds.
 
 ## Layout
 

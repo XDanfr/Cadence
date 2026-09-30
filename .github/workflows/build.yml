@@ -6,7 +6,21 @@ on:
 permissions:
   contents: read
 jobs:
+  assets:
+    name: Compile layered icon on Tahoe
+    runs-on: macos-26
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile Icon Composer artwork and accent colour
+        run: bash scripts/compile-assets.sh dist/compiled-assets
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Cadence-compiled-assets
+          path: dist/compiled-assets/
+          if-no-files-found: error
   build:
+    needs: assets
     runs-on: macos-15
     timeout-minutes: 20
     steps:
@@ -17,7 +31,13 @@ jobs:
         run: swift --version
       - name: Test timer engine
         run: swift test
+      - uses: actions/download-artifact@v4
+        with:
+          name: Cadence-compiled-assets
+          path: dist/compiled-assets
       - name: Build universal Sequoia app
+        env:
+          CADENCE_COMPILED_ASSETS: dist/compiled-assets
         run: bash scripts/build.sh
       - name: Smoke test app launch on Sequoia
         run: |

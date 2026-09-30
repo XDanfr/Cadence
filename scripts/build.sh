@@ -10,11 +10,16 @@ for arch in arm64 x86_64; do
 done
 lipo -create dist/Cadence-arm64 dist/Cadence-x86_64 -output dist/Cadence.app/Contents/MacOS/Cadence
 cp Resources/Info.plist dist/Cadence.app/Contents/Info.plist
-xcrun actool Resources/Colors.xcassets Resources/Cadence.icon \
-  --compile dist/Cadence.app/Contents/Resources \
-  --platform macosx --target-device mac --minimum-deployment-target 15.0 \
-  --app-icon Cadence --accent-color AccentColor \
-  --enable-on-demand-resources NO --output-partial-info-plist dist/asset-info.plist
+# Layered-icon rendering uses Tahoe's asset runtime. CI passes the output
+# from a Tahoe job; the app itself is still built and launched on Sequoia.
+if [[ -n "${CADENCE_COMPILED_ASSETS:-}" ]]; then
+  cp -R "$CADENCE_COMPILED_ASSETS/Resources/." dist/Cadence.app/Contents/Resources/
+  cp "$CADENCE_COMPILED_ASSETS/asset-info.plist" dist/asset-info.plist
+else
+  bash scripts/compile-assets.sh dist/compiled-assets
+  cp -R dist/compiled-assets/Resources/. dist/Cadence.app/Contents/Resources/
+  cp dist/compiled-assets/asset-info.plist dist/asset-info.plist
+fi
 python3 scripts/merge-asset-info.py
 swift scripts/export-icon-layers.swift
 test -s dist/Cadence.app/Contents/Resources/Assets.car
