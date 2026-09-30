@@ -35,6 +35,29 @@ struct SettingsView: View {
             }.formStyle(.grouped).tabItem { Label("Alerts", systemImage: "bell") }
             Form {
                 Section("Make yourself at home") {
+                    Picker("Accent colour", selection: Binding(get: { model.accentTheme }, set: { model.accentTheme = $0 })) {
+                        ForEach(AccentTheme.allCases) { theme in
+                            Label { Text(theme.title) } icon: { Image(systemName: "circle.fill").foregroundStyle(theme.color) }
+                                .tag(theme)
+                        }
+                    }
+                    HStack(spacing: 12) {
+                        ForEach(AccentTheme.allCases.filter { $0 != .system }) { theme in
+                            Button { model.accentTheme = theme } label: {
+                                ZStack {
+                                    Circle().fill(theme.color).frame(width: 25, height: 25)
+                                    if model.accentTheme == theme { Image(systemName: "checkmark").font(.system(size: 11, weight: .bold)).foregroundStyle(.white) }
+                                }
+                                .padding(3)
+                                .overlay(Circle().strokeBorder(model.accentTheme == theme ? theme.color : .clear, lineWidth: 2))
+                            }
+                            .buttonStyle(.plain)
+                            .help(theme.title)
+                            .accessibilityLabel(theme.title)
+                            .accessibilityAddTraits(model.accentTheme == theme ? .isSelected : [])
+                        }
+                    }
+                    Text("Mac accent colour follows System Settings, with Cadence purple for Multicolour. A selected colour applies throughout Cadence, including breaks.").font(.caption).foregroundStyle(.secondary)
                     Picker("Appearance", selection: $model.preferences.appearance) { ForEach(["System", "Light", "Dark"], id: \.self) { Text($0).tag($0) } }
                     Toggle("Launch at login", isOn: $model.preferences.launchAtLogin).onChange(of: model.preferences.launchAtLogin) { _, _ in model.loginChanged() }
                     Text("Cadence keeps working in the menu bar when its window closes.").font(.caption).foregroundStyle(.secondary)
@@ -51,7 +74,7 @@ struct SettingsView: View {
                     .tint(.pink)
                     .help("Support XDan on GitHub")
                     Text("Made for macOS Sequoia and later. Native Liquid Glass on Tahoe; translucent materials on Sequoia. History stays on your Mac.").font(.caption).foregroundStyle(.secondary)
-                    Link("Source code", destination: URL(string: "https://github.com/XDanfr/Pomodoro")!)
+                    Link("Source code", destination: URL(string: "https://github.com/XDanfr/Cadence")!)
                 }
             }.formStyle(.grouped).tabItem { Label("General", systemImage: "gearshape") }
         }.padding(12)
@@ -74,7 +97,7 @@ struct InsightsView: View {
                     ForEach((0..<7).reversed(), id: \.self) { offset in
                         let day = Calendar.current.date(byAdding: .day, value: -offset, to: model.now) ?? model.now
                         let count = model.sessions.filter { Calendar.current.isDate($0.date, inSameDayAs: day) }.count
-                        VStack { Text("\(count)").font(.caption).foregroundStyle(.secondary); RoundedRectangle(cornerRadius: 6).fill(.indigo.gradient).frame(height: max(5, 85 * min(1, Double(count) / Double(max(1, model.preferences.dailyGoal))))); Text(day, format: .dateTime.weekday(.abbreviated)).font(.caption) }.frame(maxWidth: .infinity).accessibilityElement(children: .combine)
+                        VStack { Text("\(count)").font(.caption).foregroundStyle(.secondary); RoundedRectangle(cornerRadius: 6).fill(model.accentColor.gradient).frame(height: max(5, 85 * min(1, Double(count) / Double(max(1, model.preferences.dailyGoal))))); Text(day, format: .dateTime.weekday(.abbreviated)).font(.caption) }.frame(maxWidth: .infinity).accessibilityElement(children: .combine)
                     }
                 }.frame(height: 120)
             }.padding(24).glassCard()
@@ -85,7 +108,7 @@ struct InsightsView: View {
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         ForEach(model.sessions.prefix(100)) { session in
-                            HStack { Image(systemName: "checkmark.circle.fill").foregroundStyle(.teal); VStack(alignment: .leading, spacing: 4) { Text(session.task.isEmpty ? "Focus interval" : session.task).lineLimit(1); Text(session.date, format: .dateTime.month().day().hour().minute()).font(.caption).foregroundStyle(.secondary) }; Spacer(); Text("\(Int(session.seconds) / 60) min").monospacedDigit().foregroundStyle(.secondary) }.padding(14)
+                            HStack { Image(systemName: "checkmark.circle.fill").foregroundStyle(model.accentColor); VStack(alignment: .leading, spacing: 4) { Text(session.task.isEmpty ? "Focus interval" : session.task).lineLimit(1); Text(session.date, format: .dateTime.month().day().hour().minute()).font(.caption).foregroundStyle(.secondary) }; Spacer(); Text("\(Int(session.seconds) / 60) min").monospacedDigit().foregroundStyle(.secondary) }.padding(14)
                             Divider()
                         }
                     }

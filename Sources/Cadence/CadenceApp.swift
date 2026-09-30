@@ -13,7 +13,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     @StateObject private var model = Model()
     var body: some Scene {
         WindowGroup("Cadence", id: "main") {
-            Dashboard().environmentObject(model)
+            Dashboard().environmentObject(model).tint(model.accentColor)
                 .preferredColorScheme(model.preferences.appearance == "Dark" ? .dark : model.preferences.appearance == "Light" ? .light : nil)
                 .frame(minWidth: 820, minHeight: 620)
         }
@@ -27,10 +27,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             }
         }
         MenuBarExtra {
-            MenuPanel().environmentObject(model)
+            MenuPanel().environmentObject(model).tint(model.accentColor)
         } label: { Label(model.running ? model.clock : "Cadence", systemImage: model.state.phase == .focus ? "timer" : "cup.and.saucer") }
         .menuBarExtraStyle(.window)
-        Settings { SettingsView().environmentObject(model).frame(width: 540, height: 540) }
+        Settings { SettingsView().environmentObject(model).tint(model.accentColor).frame(width: 540, height: 540) }
     }
 }
 
@@ -55,13 +55,13 @@ struct Dashboard: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var tab = 0
     @State private var showReset = false
-    private var accent: Color { model.state.phase == .focus ? .indigo : .teal }
+    private var accent: Color { model.accentColor }
     var body: some View {
         ZStack {
             Color(nsColor: .windowBackgroundColor)
             GeometryReader { proxy in
-                Circle().fill(.indigo.opacity(0.25)).frame(width: 550).blur(radius: 100).offset(x: -170, y: -230)
-                Circle().fill(.teal.opacity(0.2)).frame(width: 440).blur(radius: 90).offset(x: proxy.size.width - 280, y: 230)
+                Circle().fill(accent.opacity(0.25)).frame(width: 550).blur(radius: 100).offset(x: -170, y: -230)
+                Circle().fill(accent.opacity(0.14)).frame(width: 440).blur(radius: 90).offset(x: proxy.size.width - 280, y: 230)
             }.allowsHitTesting(false)
             VStack(spacing: 22) {
                 HStack {

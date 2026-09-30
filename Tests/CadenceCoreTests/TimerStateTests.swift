@@ -2,6 +2,25 @@ import XCTest
 @testable import CadenceCore
 
 final class TimerStateTests: XCTestCase {
+    func testExistingPreferencesKeepValuesWhenThemeIsAdded() throws {
+        var preferences = Preferences()
+        preferences.focusMinutes = 50
+        preferences.sound = "Ping"
+        preferences.appearance = "Dark"
+        var legacy = try JSONSerialization.jsonObject(with: JSONEncoder().encode(preferences)) as! [String: Any]
+        legacy.removeValue(forKey: "accentTheme")
+        let restored = try JSONDecoder().decode(Preferences.self, from: JSONSerialization.data(withJSONObject: legacy))
+        XCTAssertEqual(restored.focusMinutes, 50)
+        XCTAssertEqual(restored.sound, "Ping")
+        XCTAssertEqual(restored.appearance, "Dark")
+        XCTAssertNil(restored.accentTheme)
+    }
+    func testSelectedAccentPersists() throws {
+        var preferences = Preferences()
+        preferences.accentTheme = "orange"
+        let restored = try JSONDecoder().decode(Preferences.self, from: JSONEncoder().encode(preferences))
+        XCTAssertEqual(restored.accentTheme, "orange")
+    }
     func testPauseResumeUsesDeadline() {
         var state = TimerState()
         let start = Date(timeIntervalSince1970: 1000)

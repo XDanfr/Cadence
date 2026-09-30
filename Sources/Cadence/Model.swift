@@ -24,6 +24,9 @@ import CadenceCore
             Task { @MainActor in self?.tick() }
         }
         NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { [weak self] _ in Task { @MainActor in self?.tick() } }
+        NotificationCenter.default.addObserver(forName: NSColor.systemColorsDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in self?.objectWillChange.send() }
+        }
         tick(); updateSleep()
     }
     static func read<T: Decodable>(_ key: String) -> T? { UserDefaults.standard.data(forKey: key).flatMap { try? JSONDecoder().decode(T.self, from: $0) } }

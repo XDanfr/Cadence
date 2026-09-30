@@ -18,6 +18,8 @@ public struct Preferences: Codable, Equatable {
     public var preventSleep = false
     public var launchAtLogin = false
     public var appearance = "System"
+    // Optional for backward-compatible decoding of existing preferences.
+    public var accentTheme: String? = nil
     public init() {}
     public func duration(_ phase: Phase) -> TimeInterval {
         TimeInterval(max(1, min(180, phase == .focus ? focusMinutes : phase == .shortBreak ? shortMinutes : longMinutes)) * 60)
