@@ -1,62 +1,66 @@
-# Cadence
+<p align="center">
+  <img src="docs/images/cadence-icon.png" width="144" alt="Cadence app icon">
+</p>
 
-<img src="docs/images/cadence-icon.png" width="128" alt="Cadence app icon: a purple glass timer on a lavender and cyan background">
+<h1 align="center">Cadence</h1>
 
-A little structure. A lot of breathing room.
+<p align="center">
+  <strong>A little structure. A lot of breathing room.</strong><br>
+  A native Pomodoro timer that feels at home on your Mac.
+</p>
 
-Cadence is a native SwiftUI Pomodoro app for **macOS Sequoia (15) and later**, with native Liquid Glass on **Tahoe (26)** and a translucent material fallback on Sequoia. Built for Apple silicon and Intel Macs. No third-party dependencies, account, telemetry or server.
+<p align="center">
+  <a href="https://github.com/XDanfr/Cadence/actions/workflows/build.yml">Download Cadence</a> ·
+  <a href="#your-time-your-pace">Features</a> ·
+  <a href="https://github.com/XDanfr/Sponsors">Sponsor XDan</a>
+</p>
+
+<p align="center">macOS Sequoia 15+ · Apple silicon &amp; Intel · Free &amp; open source</p>
 
 ![Cadence in dark mode with a purple accent and Liquid Glass panels, showing the focus timer, daily goal, presets and Music controls](docs/images/cadence-liquid-glass.png)
 
-## Features
+Cadence gives your day a gentle rhythm: choose what to work on, settle into a focus interval, then take a break. Keep the timer in view or tuck it into your menu bar and get on with your work.
 
-- Focus, short break and long break modes with configurable durations and long-break cadence.
-- Classic (25/5/15), Deep work (50/10/20) and Gentle start (15/3/10) presets.
-- Start, pause, resume, reset, skip and add five minutes. Skips never count as completed focus.
-- Optional automatic focus and break starts; intentional defaults start breaks automatically and wait before the next focus.
-- Deadline-based timing survives sleep and relaunch. After an overdue interval, records at most one completion and starts at most one fresh interval; it never invents unattended sessions.
-- Menu bar countdown and controls; closing the window keeps the app running.
-- Task intention, daily goal, seven-day overview, session history and CSV export.
-- Apple's installed macOS alert sounds, volume control, preview, repeating alarm and dismissal.
-- Scheduled local notifications, optional keep-awake during focus and launch at login.
-- Apple Music play/pause through macOS Automation. Opens Music if it is not running. No Spotify integration yet.
-- Mac accent colour by default (Cadence purple for Multicolour), plus nine selectable accent colours across timer, background, controls and insights. Existing preferences and history are preserved.
-- System/light/dark appearance, reduced-transparency and reduced-motion support, VoiceOver labels, keyboard shortcuts.
-- Layered Icon Composer app icon with appearance variants, a compiler-generated Sequoia fallback, and universal `.app` packaging.
+## Your time, your pace
 
-## Download and run
+- **Find a rhythm that suits you.** Set your own focus and break durations, choose how often to take a longer break, or start with Classic, Deep work or Gentle start presets.
+- **Stay in control.** Pause, resume, skip or add five minutes. Choose whether the next interval starts automatically or waits for you.
+- **Keep it close.** Check your countdown and control the timer from the menu bar. Closing the window keeps Cadence running.
+- **See your progress.** Set a daily goal, give each session an intention, and look back at your week. Export your focus history whenever you like.
+- **Make it yours.** Follow your Mac's accent colour or choose from nine colours, with light, dark and system appearance options. Native Liquid Glass on Tahoe, translucent materials on Sequoia.
+- **Enjoy the Mac details.** Pick an Apple alert sound, control its volume, play or pause Apple Music, and optionally keep your Mac awake during focus or launch Cadence at login.
 
-Open the latest successful **Build Cadence** run in [Actions](https://github.com/XDanfr/Cadence/actions), download **Cadence-macOS**, extract the artifact and the enclosed ZIP, then move **Cadence.app** to Applications.
+Your settings and focus history stay on your Mac. No account, tracking or subscription.
 
-Development builds are ad-hoc signed, **not Developer ID signed or notarised**. Gatekeeper may require approval in System Settings → Privacy & Security after attempting to open. Public distribution will need a Developer ID certificate and notarisation.
+## Get Cadence
 
-Open Settings with **⌘,**. **⌘Return** toggles the timer, **⌘R** resets, **⇧⌘N** skips. A reset discards current interval progress. Changing mode also discards current progress. Duration changes apply to the next interval (or reset); presets are available while paused.
+Cadence currently ships as development builds for **macOS Sequoia 15 and later**, with support for both **Apple silicon and Intel**.
 
-Allow notifications in Settings → Alerts. Focus modes may silence banners. The selected alarm plays through the app, using system output volume; notifications do not play a duplicate sound. Cadence must be running for its repeating alarm. When quit, a scheduled banner may still arrive, and reopening reconciles the elapsed interval. Keep-awake only prevents idle system sleep; it does not override lid closure or a manual sleep.
+1. Open [Build Cadence in GitHub Actions](https://github.com/XDanfr/Cadence/actions/workflows/build.yml) and select the latest successful run. Sign in to GitHub to download artifacts.
+2. Download **Cadence-macOS**, extract it, then extract the enclosed ZIP.
+3. Move **Cadence.app** to Applications and open it.
 
-The Music button asks for Automation permission on first use. Controls Music only; there is no access to private Now Playing APIs. Launch-at-login works after installing the packaged app in a stable location. All preferences and history live locally in the app's UserDefaults domain, `me.xdan.Cadence`.
+The app is not yet notarised. If macOS blocks it, approve it in **System Settings → Privacy & Security** after trying to open it.
 
-## Build
+Notification permission handling is currently unreliable. Timer controls and in-app alert sounds work independently of notification permission.
 
-Requires Xcode 26.3 or later with the macOS 26 SDK to compile Liquid Glass. Rendering the layered Icon Composer assets also requires a Tahoe build host; CI compiles those assets on `macos-26`, then builds and smoke-tests the app on `macos-15`. On a Sequoia build host, download the `Cadence-compiled-assets` artifact from a successful run and set `CADENCE_COMPILED_ASSETS` to its extracted directory when invoking `scripts/build.sh`. The deployment target remains **15.0**; newer APIs are availability-guarded.
+## Get started
 
-```sh
-swift test
-bash scripts/build.sh
-open dist/Cadence.app
-```
+Pick a preset or open **Settings (⌘,)** to set your intervals. Add an intention, press **Start**, and let Cadence keep time. The Music button asks for permission to control Apple Music the first time you use it.
 
-You can also open `Package.swift` in Xcode. For notifications, automation permissions and login items, run the packaged `.app`, rather than the bare Swift Package executable.
+| Shortcut | Action |
+|---|---|
+| ⌘Return | Start or pause |
+| ⌘R | Reset the interval |
+| ⇧⌘N | Skip the interval |
+| ⌘, | Open Settings |
 
-GitHub Actions compiles the layered icon on `macos-26`, runs tests and builds both architectures on `macos-15`, validates the bundle/signature, smoke-tests launch on Sequoia, and uploads a ZIP. No signing secrets are needed for development builds.
+For alarm behaviour, permissions and session details, see the [user guide](docs/Usage.md).
 
-## Layout
+## Made by XDan
 
-- `Sources/CadenceCore`: portable timer state and preferences.
-- `Sources/Cadence`: SwiftUI app, dashboard, menu panel, insights, settings and macOS services.
-- `Tests/CadenceCoreTests`: deadline timing, pause/resume, cycle cadence, skipped sessions, persistence and custom durations.
-- `scripts`: universal packaging and icon generation.
+Cadence is built by **[XDan](https://github.com/XDanfr)**. If it helps your day, you can [support its development](https://github.com/XDanfr/Sponsors). Ideas and bug reports are welcome in [Issues](https://github.com/XDanfr/Cadence/issues).
 
-## Licence
+Want to contribute? See the [development guide](docs/Development.md) for building the app, running tests and understanding the project.
 
-MIT. Apple system alert sounds are loaded from the user's Mac and are not redistributed.
+[MIT licence](LICENSE). Apple alert sounds are supplied by macOS and are not redistributed with Cadence.
