@@ -34,6 +34,7 @@ import CadenceCore
         center.removePendingNotificationRequests(withIdentifiers: [intervalID, testID])
         center.removeDeliveredNotifications(withIdentifiers: [intervalID, testID])
     }
+    func removeTest() { center.removePendingNotificationRequests(withIdentifiers: [testID]) }
     func sendTest() async throws {
         let content = UNMutableNotificationContent()
         content.title = "Cadence is ready"

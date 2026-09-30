@@ -11,6 +11,7 @@ import CadenceCore
     @Published var now = Date()
     @Published var message: String?
     @Published var alarmRinging = false
+    private var lifecycleRevision = 0
     private var ticker: Timer?
     private var alarm: NSSound?
     private var activity: NSObjectProtocol?
@@ -111,13 +112,17 @@ import CadenceCore
     func testNotification() {
         guard !testingNotification else { return }
         testingNotification = true; notificationTestMessage = nil
+        let revision = lifecycleRevision
         Task {
             await notifications.refresh()
-            guard notifications.access.permission.canSchedule else { testingNotification = false; return }
+            guard revision == lifecycleRevision, notifications.access.permission.canSchedule else { testingNotification = false; return }
             do {
                 try await notificationClient.sendTest()
+                guard revision == lifecycleRevision else { notificationClient.removeTest(); testingNotification = false; return }
                 notificationTestMessage = "Test sent. A banner should appear in a moment; Focus modes and banner settings can hide it."
-            } catch { notificationTestMessage = "The test could not be sent: \(error.localizedDescription)" }
+            } catch {
+                if revision == lifecycleRevision { notificationTestMessage = "The test could not be sent: \(error.localizedDescription)" }
+            }
             testingNotification = false
         }
     }
@@ -155,8 +160,9 @@ import CadenceCore
             do { try SMAppService.mainApp.unregister() }
             catch { message = "Could not turn off launch at login. Nothing was reset. \(error.localizedDescription)"; return false }
         }
+        lifecycleRevision += 1
         stopAlarm(); notifications.clear()
-        notificationTestMessage = nil
+        message = nil; notificationTestMessage = nil
         state = TimerState(); sessions = []; preferences = Preferences()
         store.reset()
         now = Date(); save(); updateSleep()

@@ -6,6 +6,7 @@ struct OnboardingView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var step = 0
     @State private var draft: Preferences
+    private var accent: Color { (AccentTheme(rawValue: draft.accentTheme ?? "system") ?? .system).color }
     private let titles = ["Welcome to Cadence", "Find your pace", "Make it yours", "A gentle reminder"]
     init(preferences: Preferences) { _draft = State(initialValue: preferences) }
     var body: some View {
@@ -15,10 +16,14 @@ struct OnboardingView: View {
                 Spacer()
                 Text("\(step + 1) of \(titles.count)").font(.caption).foregroundStyle(.secondary)
             }
-            ProgressView(value: Double(step + 1), total: Double(titles.count)).accessibilityLabel("Setup progress")
+            HStack(spacing: 6) {
+                ForEach(0..<titles.count, id: \.self) { index in
+                    Capsule().fill(index <= step ? accent : Color.primary.opacity(0.1)).frame(height: 4)
+                }
+            }.accessibilityElement(children: .ignore).accessibilityLabel("Setup progress").accessibilityValue("Step \(step + 1) of \(titles.count)")
             VStack(spacing: 10) {
                 Image(systemName: ["timer", "dial.low", "paintpalette", "bell"][step])
-                    .font(.system(size: 36, weight: .light)).foregroundStyle(model.accentColor)
+                    .font(.system(size: 36, weight: .light)).foregroundStyle(accent)
                 Text(titles[step]).font(.system(size: 28, weight: .semibold, design: .rounded))
             }.padding(.top, 4)
             ScrollView {
@@ -75,13 +80,14 @@ struct OnboardingView: View {
             }
         }
         .padding(28).frame(width: 600, height: 600)
-        .tint(model.accentColor)
+        .tint(accent)
+        .preferredColorScheme(draft.appearance == "Dark" ? .dark : draft.appearance == "Light" ? .light : nil)
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: step)
         .interactiveDismissDisabled()
     }
     private func feature(_ title: String, detail: String, icon: String) -> some View {
         HStack(alignment: .top, spacing: 14) {
-            Image(systemName: icon).font(.title2).foregroundStyle(model.accentColor).frame(width: 28)
+            Image(systemName: icon).font(.title2).foregroundStyle(accent).frame(width: 28)
             VStack(alignment: .leading, spacing: 4) {
                 Text(title).font(.headline)
                 Text(detail).foregroundStyle(.secondary)
@@ -97,8 +103,8 @@ struct OnboardingView: View {
                 Text(name).font(.callout.weight(.semibold))
                 Text("\(focus) / \(short) / \(long)").font(.caption).foregroundStyle(.secondary)
             }.frame(maxWidth: .infinity).padding(12)
-                .background(model.accentColor.opacity(selected ? 0.18 : 0.05), in: RoundedRectangle(cornerRadius: 12))
-                .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(selected ? model.accentColor : .clear))
+                .background(accent.opacity(selected ? 0.18 : 0.05), in: RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(selected ? accent : .clear))
         }.buttonStyle(.plain).accessibilityAddTraits(selected ? .isSelected : [])
     }
 }
