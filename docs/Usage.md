@@ -30,7 +30,9 @@ Tahoe uses native Liquid Glass; Sequoia uses translucent materials. Cadence resp
 
 Choose from the Apple alert sounds installed on your Mac, set the volume and preview a sound in Settings → Alerts. Alarms repeat until dismissed. System output volume and mute settings still apply. Cadence must be running to play an alarm.
 
-**Known issue:** notification permission handling is currently unreliable. In-app sounds do not require notification permission.
+Request access with **Allow notifications…** during onboarding or in Settings → Alerts. macOS shows its permission prompt only when access has not been decided before. If access is off, use **Open System Settings…** to enable Cadence. The status updates when you return to the app, and **Send test notification** checks delivery without changing your timer. The notification toggle is Cadence's preference; it does not override macOS permission.
+
+If macOS cannot request access for a development build, Cadence reports that separately from a denied permission. Install and launch the packaged `Cadence.app` from Applications, rather than running the bare executable. **Copy notification diagnostics** includes the app location, macOS version and observed permission/error for a bug report. Changing the bundle identifier or signing identity can change the application's macOS permission identity. In-app sounds do not require notification permission.
 
 When notification permission is available, Cadence schedules a local banner for the interval deadline. Focus modes may silence it. Notifications do not play a second copy of the app's alarm sound. A scheduled banner may arrive while Cadence is quit; reopening reconciles the elapsed interval.
 
@@ -44,8 +46,16 @@ Launch-at-login works after installing the packaged app in a stable location, su
 
 ## History and privacy
 
-Daily goals, the seven-day overview and session history count completed focus intervals. Export history to CSV from Insights. Clearing history requires confirmation.
+Daily goals, the seven-day overview and session history count completed focus intervals. Export history to CSV from Insights or Settings → Data. **Reset history…** lets you clear today, the last seven calendar days (including today), an inclusive date range, or all history. Dates use your Mac's time zone. Cadence previews the number of affected intervals and asks for confirmation. This leaves your current timer, round count and settings alone; clearing today's history also clears its daily progress.
+
+**Reset entire app…** stops the timer and alarm, clears intentions and all history, restores default settings, turns off launch at login, cancels Cadence's pending notifications and removes its delivered reminders. Onboarding appears again. Export a CSV first if you want a history backup; resets cannot be undone. A reset cannot revoke macOS notification or Automation permission—use System Settings for those.
 
 Preferences and history live locally in the UserDefaults domain `me.xdan.Cadence`. Upgrading from the previous `uk.xdan.Cadence` identifier copies existing settings, timer state and sessions when the new domain has no corresponding value. Existing data in the new domain takes precedence.
 
 Cadence has no account, telemetry or server.
+
+## Onboarding
+
+Setup appears once on the first launch of this version, including for existing installations. Existing history and settings are preserved. Choose intervals, flow, accent, appearance, daily goal and alarm sound, then optionally request notification access. **Skip setup** keeps your existing settings.
+
+Reopen setup with **Settings → Data → Show onboarding again**. **Cancel** discards unsaved setup choices; finishing applies them without clearing history or interrupting a running or partially completed interval. Resetting the entire app brings back first-run setup. You can always adjust these settings later.

@@ -28,9 +28,7 @@ struct SettingsView: View {
                     Text("Uses the alert sounds installed with macOS. Alarms repeat until dismissed. Your Mac's output volume and mute setting still apply.").font(.caption).foregroundStyle(.secondary)
                 }
                 Section("Notifications") {
-                    Toggle("Show interval notifications", isOn: $model.preferences.notifications).onChange(of: model.preferences.notifications) { _, enabled in if enabled { model.requestNotifications() } else { model.scheduleNotification() } }
-                    Button("Enable notifications…") { model.requestNotifications() }
-                    Text("Focus modes can silence notifications. Cadence must be running to play its alarm; scheduled notifications can arrive while it is closed.").font(.caption).foregroundStyle(.secondary)
+                    NotificationSettingsView()
                 }
             }.formStyle(.grouped).tabItem { Label("Alerts", systemImage: "bell") }
             Form {
@@ -77,13 +75,15 @@ struct SettingsView: View {
                     Link("Source code", destination: URL(string: "https://github.com/XDanfr/Cadence")!)
                 }
             }.formStyle(.grouped).tabItem { Label("General", systemImage: "gearshape") }
+            DataSettingsView().tabItem { Label("Data", systemImage: "externaldrive") }
         }.padding(12)
+        .task { await model.refreshNotifications() }
     }
 }
 
 struct InsightsView: View {
     @EnvironmentObject private var model: Model
-    @State private var confirmClear = false
+    @State private var showHistoryReset = false
     var body: some View {
         VStack(alignment: .leading, spacing: 22) {
             HStack(spacing: 18) {
@@ -101,7 +101,7 @@ struct InsightsView: View {
                     }
                 }.frame(height: 120)
             }.padding(24).glassCard()
-            HStack { Text("Recent focus").font(.headline); Spacer(); Button("Export CSV", systemImage: "square.and.arrow.up") { model.exportHistory() }; Button("Clear history", role: .destructive) { confirmClear = true }.disabled(model.sessions.isEmpty) }
+            HStack { Text("Recent focus").font(.headline); Spacer(); Button("Export CSV", systemImage: "square.and.arrow.up") { model.exportHistory() }; Button("Reset history…", role: .destructive) { showHistoryReset = true }.disabled(model.sessions.isEmpty) }
             if model.sessions.isEmpty {
                 ContentUnavailableView("Your rhythm starts here", systemImage: "leaf", description: Text("Complete a focus interval to see it here."))
             } else {
@@ -115,7 +115,7 @@ struct InsightsView: View {
                 }.glassCard()
             }
         }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .confirmationDialog("Permanently clear your focus history?", isPresented: $confirmClear) { Button("Clear history", role: .destructive) { model.sessions.removeAll(); model.save() } }
+        .sheet(isPresented: $showHistoryReset) { HistoryResetView().environmentObject(model) }
     }
     private func metric(_ title: String, value: String, detail: String, icon: String) -> some View {
         VStack(alignment: .leading, spacing: 8) { Label(title, systemImage: icon).font(.callout).foregroundStyle(.secondary); Text(value).font(.system(size: 36, weight: .medium, design: .rounded)); Text(detail).font(.caption).foregroundStyle(.secondary) }.padding(24).frame(maxWidth: .infinity, alignment: .leading).glassCard()

@@ -14,13 +14,24 @@ import CadenceCore
     private var ticker: Timer?
     private var alarm: NSSound?
     private var activity: NSObjectProtocol?
-    private let defaults = UserDefaults.standard
-    private let notificationID = "cadence.interval"
+    private let store: CadenceStore
+    let notifications: NotificationCoordinator
+    private let notificationClient: SystemNotifications
+    @Published var showOnboarding: Bool
+    @Published var notificationTestMessage: String?
+    @Published var testingNotification = false
+    var hasCompletedOnboarding: Bool { store.onboardingCompleted }
     init() {
-        Self.migratePreviousDefaults()
-        state = Self.read("state") ?? TimerState()
-        preferences = Self.read("preferences") ?? Preferences()
-        sessions = Self.read("sessions") ?? []
+        let store = CadenceStore()
+        self.store = store
+        store.migratePreviousDomain(currentBundleID: Bundle.main.bundleIdentifier)
+        let client = SystemNotifications()
+        notificationClient = client
+        notifications = NotificationCoordinator(client: client)
+        showOnboarding = !store.onboardingCompleted
+        state = store.read("state") ?? TimerState()
+        preferences = store.read("preferences") ?? Preferences()
+        sessions = store.read("sessions") ?? []
         ticker = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.tick() }
         }
@@ -28,18 +39,13 @@ import CadenceCore
         NotificationCenter.default.addObserver(forName: NSColor.systemColorsDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
             Task { @MainActor in self?.objectWillChange.send() }
         }
-        tick(); updateSleep()
-    }
-    private static func migratePreviousDefaults() {
-        guard Bundle.main.bundleIdentifier == "me.xdan.Cadence",
-              let previous = UserDefaults.standard.persistentDomain(forName: "uk.xdan.Cadence") else { return }
-        // Preserve local data when upgrading across the bundle-ID correction.
-        // Existing values in the new domain always win.
-        for key in ["state", "preferences", "sessions"] where UserDefaults.standard.object(forKey: key) == nil {
-            if let value = previous[key] { UserDefaults.standard.set(value, forKey: key) }
+        notifications.onChange = { [weak self] in self?.objectWillChange.send() }
+        NotificationCenter.default.addObserver(forName: NSApplication.didBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in await self?.refreshNotifications() }
         }
+        tick(); updateSleep()
+        Task { await refreshNotifications() }
     }
-    static func read<T: Decodable>(_ key: String) -> T? { UserDefaults.standard.data(forKey: key).flatMap { try? JSONDecoder().decode(T.self, from: $0) } }
     var remaining: TimeInterval { state.seconds(at: now) }
     var running: Bool { state.deadline != nil }
     var clock: String { let s = Int(ceil(remaining)); return String(format: "%02d:%02d", s / 60, s % 60) }
@@ -50,11 +56,7 @@ import CadenceCore
         let folder = URL(fileURLWithPath: "/System/Library/Sounds")
         return ["None"] + ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)) ?? []).filter { $0.pathExtension == "aiff" }.map { $0.deletingPathExtension().lastPathComponent }.sorted()
     }
-    func save() {
-        if let data = try? JSONEncoder().encode(state) { defaults.set(data, forKey: "state") }
-        if let data = try? JSONEncoder().encode(preferences) { defaults.set(data, forKey: "preferences") }
-        if let data = try? JSONEncoder().encode(sessions) { defaults.set(data, forKey: "sessions") }
-    }
+    func save() { store.save(state: state, preferences: preferences, sessions: sessions) }
     func tick() {
         now = Date()
         guard running, remaining <= 0 else { return }
@@ -83,22 +85,83 @@ import CadenceCore
         guard preferences.sound != "None", let sound = NSSound(named: NSSound.Name(preferences.sound)) else { return }
         sound.volume = Float(preferences.volume); sound.loops = loop; sound.play(); alarm = sound; alarmRinging = loop
     }
+    func refreshNotifications() async {
+        await notifications.refresh()
+        scheduleNotification()
+    }
     func requestNotifications() {
         Task {
-            do { let granted = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]); if !granted { message = "Notifications are disabled. Enable Cadence in System Settings → Notifications." }; scheduleNotification() }
-            catch { message = error.localizedDescription }
+            await notifications.requestPermission()
+            scheduleNotification()
         }
     }
     func scheduleNotification() {
-        let center = UNUserNotificationCenter.current()
-        center.removePendingNotificationRequests(withIdentifiers: [notificationID])
-        guard preferences.notifications, let deadline = state.deadline, deadline > Date() else { return }
-        let content = UNMutableNotificationContent()
-        content.title = state.phase == .focus ? "Time to breathe" : "Ready for your next focus?"
-        content.body = state.phase == .focus ? "Your focus interval is complete. Take a well-earned break." : "Your break is complete. Return at your own pace."
-        // The selected Apple sound is played by the app; avoid two simultaneous alarms.
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(1, deadline.timeIntervalSinceNow), repeats: false)
-        center.add(UNNotificationRequest(identifier: notificationID, content: content, trigger: trigger))
+        guard preferences.notifications, let deadline = state.deadline, deadline > Date() else {
+            notifications.replace(with: nil); return
+        }
+        notifications.replace(with: IntervalNotification(
+            deadline: deadline,
+            title: state.phase == .focus ? "Time to breathe" : "Ready for your next focus?",
+            body: state.phase == .focus ? "Your focus interval is complete. Take a well-earned break." : "Your break is complete. Return at your own pace."
+        ))
+    }
+    func openNotificationSettings() {
+        if let url = URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension") { NSWorkspace.shared.open(url) }
+    }
+    func testNotification() {
+        guard !testingNotification else { return }
+        testingNotification = true; notificationTestMessage = nil
+        Task {
+            await notifications.refresh()
+            guard notifications.access.permission.canSchedule else { testingNotification = false; return }
+            do {
+                try await notificationClient.sendTest()
+                notificationTestMessage = "Test sent. A banner should appear in a moment; Focus modes and banner settings can hide it."
+            } catch { notificationTestMessage = "The test could not be sent: \(error.localizedDescription)" }
+            testingNotification = false
+        }
+    }
+    func copyNotificationDiagnostics() {
+        let info = """
+        Cadence notification diagnostics
+        Bundle: \(Bundle.main.bundleIdentifier ?? "none")
+        Location: \(Bundle.main.bundleURL.path)
+        macOS: \(ProcessInfo.processInfo.operatingSystemVersionString)
+        Permission: \(notifications.access.permission.rawValue)
+        Banners enabled: \(notifications.access.alertsEnabled)
+        Interval notifications: \(preferences.notifications)
+        Error: \(notifications.issue ?? notificationTestMessage ?? "none")
+        """
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(info, forType: .string)
+    }
+    func completeOnboarding(_ draft: Preferences? = nil) {
+        if let draft {
+            // Do not disturb a running or partly completed interval when replaying setup.
+            let untouchedTimer = state.deadline == nil && state.remaining == state.duration
+            preferences = draft
+            if untouchedTimer { state.reset(preferences: preferences) }
+        }
+        store.onboardingCompleted = true
+        showOnboarding = false
+        save(); scheduleNotification(); updateSleep()
+    }
+    func clearHistory(ids: Set<UUID>) {
+        sessions.removeAll { ids.contains($0.id) }; save()
+    }
+    @discardableResult func resetApp() -> Bool {
+        // Unregister before deleting preferences; a failed unregister must remain visible/retryable.
+        if SMAppService.mainApp.status == .enabled || SMAppService.mainApp.status == .requiresApproval {
+            do { try SMAppService.mainApp.unregister() }
+            catch { message = "Could not turn off launch at login. Nothing was reset. \(error.localizedDescription)"; return false }
+        }
+        stopAlarm(); notifications.clear()
+        notificationTestMessage = nil
+        state = TimerState(); sessions = []; preferences = Preferences()
+        store.reset()
+        now = Date(); save(); updateSleep()
+        showOnboarding = true
+        return true
     }
     func updateSleep() {
         if let activity { ProcessInfo.processInfo.endActivity(activity); self.activity = nil }

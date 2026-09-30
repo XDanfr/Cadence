@@ -26,7 +26,7 @@ Cadence gives your day a gentle rhythm: choose what to work on, settle into a fo
 - **Find a rhythm that suits you.** Set your own focus and break durations, choose how often to take a longer break, or start with Classic, Deep work or Gentle start presets.
 - **Stay in control.** Pause, resume, skip or add five minutes. Choose whether the next interval starts automatically or waits for you.
 - **Keep it close.** Check your countdown and control the timer from the menu bar. Closing the window keeps Cadence running.
-- **See your progress.** Set a daily goal, give each session an intention, and look back at your week. Export your focus history whenever you like.
+- **See your progress.** Set a daily goal, give each session an intention, and look back at your week. Export your focus history whenever you like, or reset selected days for a fresh start.
 - **Make it yours.** Follow your Mac's accent colour or choose from nine colours, with light, dark and system appearance options. Native Liquid Glass on Tahoe, translucent materials on Sequoia.
 - **Enjoy the Mac details.** Pick an Apple alert sound, control its volume, play or pause Apple Music, and optionally keep your Mac awake during focus or launch Cadence at login.
 
@@ -42,11 +42,11 @@ Cadence currently ships as development builds for **macOS Sequoia 15 and later**
 
 The app is not yet notarised. If macOS blocks it, approve it in **System Settings → Privacy & Security** after trying to open it.
 
-Notification permission handling is currently unreliable. Timer controls and in-app alert sounds work independently of notification permission.
+Notification access is optional. Request it during setup or in **Settings → Alerts**, where you can check access and send a test reminder. Timer controls and in-app alert sounds work independently of notification permission.
 
 ## Get started
 
-Pick a preset or open **Settings (⌘,)** to set your intervals. Add an intention, press **Start**, and let Cadence keep time. The Music button asks for permission to control Apple Music the first time you use it.
+First-run setup helps you choose your pace, appearance and reminders. You can skip it or revisit it in **Settings → Data**. Pick a preset or open **Settings (⌘,)** to set your intervals. Add an intention, press **Start**, and let Cadence keep time. The Music button asks for permission to control Apple Music the first time you use it.
 
 | Shortcut | Action |
 |---|---|
