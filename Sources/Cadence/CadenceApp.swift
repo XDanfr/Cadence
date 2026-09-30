@@ -15,9 +15,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         WindowGroup("Cadence", id: "main") {
             Dashboard().environmentObject(model)
                 .preferredColorScheme(model.preferences.appearance == "Dark" ? .dark : model.preferences.appearance == "Light" ? .light : nil)
-                .frame(minWidth: 780, minHeight: 640)
+                .frame(minWidth: 820, minHeight: 760)
         }
-        .defaultSize(width: 940, height: 730)
+        .defaultSize(width: 940, height: 780)
         .windowStyle(.hiddenTitleBar)
         .commands {
             CommandGroup(after: .newItem) {

@@ -32,7 +32,7 @@ import CadenceCore
     var clock: String { let s = Int(ceil(remaining)); return String(format: "%02d:%02d", s / 60, s % 60) }
     var progress: Double { min(1, max(0, 1 - remaining / max(1, state.duration))) }
     var today: [Session] { sessions.filter { Calendar.current.isDateInToday($0.date) } }
-    var week: [Session] { sessions.filter { $0.date >= Calendar.current.startOfDay(for: now).addingTimeInterval(-6 * 86400) } }
+    var week: [Session] { sessions.filter { $0.date >= (Calendar.current.date(byAdding: .day, value: -6, to: Calendar.current.startOfDay(for: now)) ?? now) } }
     var sounds: [String] {
         let folder = URL(fileURLWithPath: "/System/Library/Sounds")
         return ["None"] + ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)) ?? []).filter { $0.pathExtension == "aiff" }.map { $0.deletingPathExtension().lastPathComponent }.sorted()
@@ -99,7 +99,8 @@ import CadenceCore
     }
     func musicToggle() {
         // Execute only on an explicit click. macOS prompts for Automation permission.
-        let source = "tell application \"System Events\" to set musicRunning to exists process \"Music\"\nif musicRunning then\ntell application \"Music\" to playpause\nelse\ntell application \"Music\" to activate\nend if"
+        let musicRunning = NSWorkspace.shared.runningApplications.contains { $0.bundleIdentifier == "com.apple.Music" }
+        let source = musicRunning ? "tell application \"Music\" to playpause" : "tell application \"Music\" to activate"
         var error: NSDictionary?
         NSAppleScript(source: source)?.executeAndReturnError(&error)
         if let error { message = "Music control needs permission in System Settings → Privacy & Security → Automation. \(error[NSAppleScript.errorMessage] ?? "")" }

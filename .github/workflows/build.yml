@@ -24,9 +24,15 @@ jobs:
           open dist/Cadence.app
           sleep 5
           pgrep -x Cadence
+          screencapture -x dist/Cadence-Sequoia.png
           pkill -x Cadence
       - uses: actions/upload-artifact@v4
         with:
           name: Cadence-macOS
           path: dist/Cadence-macOS.zip
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Cadence-Sequoia-preview
+          path: dist/Cadence-Sequoia.png
           if-no-files-found: error
