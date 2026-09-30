@@ -15,9 +15,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         WindowGroup("Cadence", id: "main") {
             Dashboard().environmentObject(model)
                 .preferredColorScheme(model.preferences.appearance == "Dark" ? .dark : model.preferences.appearance == "Light" ? .light : nil)
-                .frame(minWidth: 820, minHeight: 760)
+                .frame(minWidth: 820, minHeight: 620)
         }
-        .defaultSize(width: 940, height: 780)
+        .defaultSize(width: 940, height: 700)
         .windowStyle(.hiddenTitleBar)
         .commands {
             CommandGroup(after: .newItem) {
@@ -68,10 +68,10 @@ struct Dashboard: View {
                     Image(systemName: "waveform.path").font(.title2).foregroundStyle(accent)
                     Text("Cadence").font(.title2.weight(.semibold))
                     Spacer()
-                    Picker("Page", selection: $tab) { Text("Timer").tag(0); Text("Insights").tag(1) }.pickerStyle(.segmented).frame(width: 190)
+                    Picker("Page", selection: $tab) { Text("Timer").tag(0); Text("Insights").tag(1) }.pickerStyle(.segmented).labelsHidden().frame(width: 190)
                     SettingsLink { Image(systemName: "slider.horizontal.3").font(.title3) }.buttonStyle(.plain).help("Settings · ⌘,")
                 }.padding(.top, 18)
-                if tab == 0 { timerPage } else { InsightsView() }
+                if tab == 0 { ScrollView { timerPage.padding(.bottom, 4) }.scrollIndicators(.hidden) } else { InsightsView() }
                 HStack {
                     Label("Find your rhythm. Keep your space.", systemImage: "sparkle").font(.caption).foregroundStyle(.secondary)
                     Spacer()
@@ -103,7 +103,7 @@ struct Dashboard: View {
                         Text(model.clock).font(.system(size: 64, weight: .light, design: .rounded)).monospacedDigit().contentTransition(.numericText()).accessibilityLabel("\(model.clock) remaining")
                         Label(model.running ? "In your rhythm" : "Whenever you're ready", systemImage: model.running ? "waveform" : "moon").font(.caption).foregroundStyle(.secondary)
                     }
-                }.frame(width: 290, height: 290).padding(8)
+                }.frame(width: 260, height: 260).padding(8)
                 HStack(spacing: 16) {
                     Button { if model.running || model.progress > 0 { showReset = true } else { model.reset() } } label: { Image(systemName: "arrow.counterclockwise") }.buttonStyle(.bordered).controlSize(.large).help("Reset interval")
                     Button { model.toggle() } label: { Label(model.running ? "Pause" : "Start", systemImage: model.running ? "pause.fill" : "play.fill").frame(width: 110) }.buttonStyle(.borderedProminent).controlSize(.large)
