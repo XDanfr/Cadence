@@ -53,9 +53,11 @@ extension View { func glassCard() -> some View { modifier(GlassCard()) } }
 struct Dashboard: View {
     @EnvironmentObject private var model: Model
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
     @State private var tab = 0
     @State private var showReset = false
     private var accent: Color { model.accentColor }
+    private var timerShadowInset: CGFloat { colorScheme == .light ? 32 : 0 }
     var body: some View {
         ZStack {
             Color(nsColor: .windowBackgroundColor)
@@ -71,7 +73,15 @@ struct Dashboard: View {
                     Picker("Page", selection: $tab) { Text("Timer").tag(0); Text("Insights").tag(1) }.pickerStyle(.segmented).labelsHidden().frame(width: 190)
                     SettingsLink { Image(systemName: "slider.horizontal.3").font(.title3) }.buttonStyle(.plain).help("Settings · ⌘,")
                 }.padding(.top, 18)
-                if tab == 0 { ScrollView { timerPage.padding(.bottom, 4) }.scrollIndicators(.hidden) } else { InsightsView() }
+                if tab == 0 {
+                    ScrollView {
+                        timerPage.padding(.bottom, 4).padding(timerShadowInset)
+                    }
+                    .scrollIndicators(.hidden)
+                    // Keep card shadows inside the scroll viewport, while
+                    // retaining the same visible card positions and widths.
+                    .padding(-timerShadowInset)
+                } else { InsightsView() }
                 HStack {
                     Spacer()
                     Text("⌘R reset · ⇧⌘N skip").font(.caption).foregroundStyle(.tertiary)
