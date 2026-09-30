@@ -6,7 +6,7 @@ A little structure. A lot of breathing room.
 
 Cadence is a native SwiftUI Pomodoro app for **macOS Sequoia (15) and later**, with native Liquid Glass on **Tahoe (26)** and a translucent material fallback on Sequoia. Built for Apple silicon and Intel Macs. No third-party dependencies, account, telemetry or server.
 
-![Cadence in dark mode with a green accent, showing the focus timer, daily goal, presets and Music controls](docs/images/cadence-dark-green.png)
+![Cadence in dark mode with a purple accent and Liquid Glass panels, showing the focus timer, daily goal, presets and Music controls](docs/images/cadence-liquid-glass.png)
 
 ## Features
 
