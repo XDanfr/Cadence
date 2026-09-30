@@ -29,7 +29,7 @@ jobs:
         run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
       - name: Toolchain
         run: swift --version
-      - name: Test timer engine
+      - name: Test timer, notifications and persistence
         run: swift test
       - uses: actions/download-artifact@v4
         with:
@@ -46,6 +46,17 @@ jobs:
           pgrep -x Cadence
           screencapture -x dist/Cadence-Sequoia.png
           pkill -x Cadence
+      - name: Probe native notification request on Sequoia
+        run: |
+          open -n dist/Cadence.app --args --notification-probe "$PWD/dist/Cadence-notification-probe.txt"
+          sleep 8
+          cat dist/Cadence-notification-probe.txt
+          pkill -x Cadence
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Cadence-notification-probe
+          path: dist/Cadence-notification-probe.txt
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
           name: Cadence-macOS

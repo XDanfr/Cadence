@@ -170,7 +170,13 @@ import CadenceCore
         }
     }
     func loginChanged() {
-        do { if preferences.launchAtLogin { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() } }
+        do {
+            if preferences.launchAtLogin {
+                if SMAppService.mainApp.status != .enabled { try SMAppService.mainApp.register() }
+            } else if SMAppService.mainApp.status == .enabled || SMAppService.mainApp.status == .requiresApproval {
+                try SMAppService.mainApp.unregister()
+            }
+        }
         catch { preferences.launchAtLogin = SMAppService.mainApp.status == .enabled; message = "Login item: \(error.localizedDescription)" }
     }
     func musicToggle() {
