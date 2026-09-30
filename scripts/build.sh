@@ -12,6 +12,7 @@ lipo -create dist/Cadence-arm64 dist/Cadence-x86_64 -output dist/Cadence.app/Con
 cp Resources/Info.plist dist/Cadence.app/Contents/Info.plist
 xcrun actool Resources/Colors.xcassets --compile dist/Cadence.app/Contents/Resources --platform macosx --minimum-deployment-target 15.0 --output-partial-info-plist dist/asset-info.plist
 swift scripts/icon.swift
+swift scripts/export-icon-layers.swift
 iconutil -c icns dist/AppIcon.iconset -o dist/Cadence.app/Contents/Resources/AppIcon.icns
 codesign --force --deep --sign - dist/Cadence.app
 codesign --verify --deep --strict dist/Cadence.app

@@ -73,7 +73,6 @@ struct Dashboard: View {
                 }.padding(.top, 18)
                 if tab == 0 { ScrollView { timerPage.padding(.bottom, 4) }.scrollIndicators(.hidden) } else { InsightsView() }
                 HStack {
-                    Label("Find your rhythm. Keep your space.", systemImage: "sparkle").font(.caption).foregroundStyle(.secondary)
                     Spacer()
                     Text("⌘R reset · ⇧⌘N skip").font(.caption).foregroundStyle(.tertiary)
                 }
