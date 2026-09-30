@@ -34,7 +34,7 @@ Open Settings with **⌘,**. **⌘Return** toggles the timer, **⌘R** resets, *
 
 Allow notifications in Settings → Alerts. Focus modes may silence banners. The selected alarm plays through the app, using system output volume; notifications do not play a duplicate sound. Cadence must be running for its repeating alarm. When quit, a scheduled banner may still arrive, and reopening reconciles the elapsed interval. Keep-awake only prevents idle system sleep; it does not override lid closure or a manual sleep.
 
-The Music button asks for Automation permission on first use. Controls Music only; there is no access to private Now Playing APIs. Launch-at-login works after installing the packaged app in a stable location. All preferences and history live locally in the app's UserDefaults domain, `uk.xdan.Cadence`.
+The Music button asks for Automation permission on first use. Controls Music only; there is no access to private Now Playing APIs. Launch-at-login works after installing the packaged app in a stable location. All preferences and history live locally in the app's UserDefaults domain, `me.xdan.Cadence`.
 
 ## Build
 

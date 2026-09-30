@@ -17,6 +17,7 @@ import CadenceCore
     private let defaults = UserDefaults.standard
     private let notificationID = "cadence.interval"
     init() {
+        Self.migratePreviousDefaults()
         state = Self.read("state") ?? TimerState()
         preferences = Self.read("preferences") ?? Preferences()
         sessions = Self.read("sessions") ?? []
@@ -28,6 +29,15 @@ import CadenceCore
             Task { @MainActor in self?.objectWillChange.send() }
         }
         tick(); updateSleep()
+    }
+    private static func migratePreviousDefaults() {
+        guard Bundle.main.bundleIdentifier == "me.xdan.Cadence",
+              let previous = UserDefaults.standard.persistentDomain(forName: "uk.xdan.Cadence") else { return }
+        // Preserve local data when upgrading across the bundle-ID correction.
+        // Existing values in the new domain always win.
+        for key in ["state", "preferences", "sessions"] where UserDefaults.standard.object(forKey: key) == nil {
+            if let value = previous[key] { UserDefaults.standard.set(value, forKey: key) }
+        }
     }
     static func read<T: Decodable>(_ key: String) -> T? { UserDefaults.standard.data(forKey: key).flatMap { try? JSONDecoder().decode(T.self, from: $0) } }
     var remaining: TimeInterval { state.seconds(at: now) }
