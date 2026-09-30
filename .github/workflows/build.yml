@@ -1,0 +1,38 @@
+name: Build Cadence
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 26
+        run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+      - name: Toolchain
+        run: swift --version
+      - name: Test timer engine
+        run: swift test
+      - name: Build universal Sequoia app
+        run: bash scripts/build.sh
+      - name: Smoke test app launch on Sequoia
+        run: |
+          open dist/Cadence.app
+          sleep 5
+          pgrep -x Cadence
+          screencapture -x dist/Cadence-Sequoia.png
+          pkill -x Cadence
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Cadence-macOS
+          path: dist/Cadence-macOS.zip
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Cadence-Sequoia-preview
+          path: dist/Cadence-Sequoia.png
+          if-no-files-found: error
