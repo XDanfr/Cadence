@@ -9,7 +9,8 @@ files = [app]
 symlinks = {"Applications": "/Applications"}
 icon = os.path.join(app, "Contents", "Resources", "Cadence.icns")
 background = os.path.join(artwork, "background.tiff")
-window_rect = ((160, 160), (800, 500))
+# Finder includes its 28-point title bar in the window height.
+window_rect = ((160, 160), (800, 528))
 default_view = "icon-view"
 show_toolbar = False
 show_sidebar = False

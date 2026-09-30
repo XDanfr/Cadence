@@ -29,7 +29,7 @@ func render(scale: Int, preview: Bool) -> NSBitmapImageRep {
     NSGraphicsContext.saveGraphicsState()
     let context = NSGraphicsContext(bitmapImageRep: rep)!
     NSGraphicsContext.current = context
-    context.cgContext.scaleBy(x: CGFloat(scale), y: CGFloat(scale))
+    // NSGraphicsContext already scales pixels to rep.size, including the 2× representation.
     context.cgContext.translateBy(x: 0, y: height)
     context.cgContext.scaleBy(x: 1, y: -1)
     // AppKit text/image drawing also needs to know this context is flipped.

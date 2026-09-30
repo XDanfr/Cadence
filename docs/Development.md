@@ -84,7 +84,7 @@ bash scripts/package-dmg.sh
 bash scripts/verify-dmg.sh
 ```
 
-The installer artwork is drawn with AppKit by `scripts/installer-artwork.swift`. It reads the current Icon Composer background stops, preserving Display P3 and sRGB colour spaces. The 800 × 500 point canvas has a 3-point purple border, a clean arrow and native Finder icons at (220, 244) and (580, 244). A multi-resolution TIFF supplies both 1× and 2× artwork. The icon locations and window settings live in `Resources/Installer/dmg-settings.py`.
+The installer artwork is drawn with AppKit by `scripts/installer-artwork.swift`. It reads the current Icon Composer background stops, preserving Display P3 and sRGB colour spaces. The 800 × 500 point canvas has a 3-point purple border, a clean arrow and native Finder icons at (220, 244) and (580, 244). A multi-resolution TIFF supplies both 1× and 2× artwork. The Finder window is 800 × 528 points including its 28-point title bar, leaving the full 800 × 500 point artwork visible. The icon locations and window settings live in `Resources/Installer/dmg-settings.py`.
 
 `dmgbuild` writes Finder metadata directly, so the styled layout does not depend on scripting Finder during packaging. The verification script mounts the finished image read-only, checks the app, Applications link, Finder metadata and signature, and captures its actual Finder window. CI uploads **Cadence-release-packages** (DMG, ZIP and SHA256SUMS.txt) and **Cadence-DMG-preview** (artwork and Finder screenshot).
 
