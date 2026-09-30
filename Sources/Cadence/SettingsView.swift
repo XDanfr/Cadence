@@ -40,7 +40,16 @@ struct SettingsView: View {
                     Text("Cadence keeps working in the menu bar when its window closes.").font(.caption).foregroundStyle(.secondary)
                 }
                 Section("Cadence 1.0") {
-                    Text("A little structure. A lot of breathing room.")
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Made by XDan").font(.headline)
+                        Text("A little structure. A lot of breathing room.").foregroundStyle(.secondary)
+                    }
+                    Link(destination: URL(string: "https://github.com/XDanfr/Sponsors")!) {
+                        Label("Sponsor XDan", systemImage: "heart.fill")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.pink)
+                    .help("Support XDan on GitHub")
                     Text("Made for macOS Sequoia and later. Native Liquid Glass on Tahoe; translucent materials on Sequoia. History stays on your Mac.").font(.caption).foregroundStyle(.secondary)
                     Link("Source code", destination: URL(string: "https://github.com/XDanfr/Pomodoro")!)
                 }
