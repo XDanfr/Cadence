@@ -37,7 +37,7 @@ struct SettingsView: View {
                 Section("Make yourself at home") {
                     Picker("Accent colour", selection: Binding(get: { model.accentTheme }, set: { model.accentTheme = $0 })) {
                         ForEach(AccentTheme.allCases) { theme in
-                            Label { Text(theme.title) } icon: { Image(systemName: "circle.fill").foregroundStyle(theme.color) }
+                            Label { Text(theme.title) } icon: { Image(nsImage: theme.swatchImage).renderingMode(.original) }
                                 .tag(theme)
                         }
                     }
