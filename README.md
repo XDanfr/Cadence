@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/XDanfr/Cadence/actions/workflows/build.yml">Download Cadence</a> ·
+  <a href="https://github.com/XDanfr/Cadence/releases">Download Cadence</a> ·
   <a href="#your-time-your-pace">Features</a> ·
   <a href="https://github.com/XDanfr/Sponsors">Sponsor XDan</a>
 </p>
@@ -34,13 +34,15 @@ Your settings and focus history stay on your Mac. No account, tracking or subscr
 
 ## Get Cadence
 
-Cadence currently ships as development builds for **macOS Sequoia 15 and later**, with support for both **Apple silicon and Intel**.
+Cadence supports **macOS Sequoia 15 and later**, on both **Apple silicon and Intel**.
 
-1. Open [Build Cadence in GitHub Actions](https://github.com/XDanfr/Cadence/actions/workflows/build.yml) and select the latest successful run. Sign in to GitHub to download artifacts.
-2. Download **Cadence-macOS**, extract it, then extract the enclosed ZIP.
-3. Move **Cadence.app** to Applications and open it.
+1. Download the DMG from [Releases](https://github.com/XDanfr/Cadence/releases).
+2. Open it and drag **Cadence** into **Applications**.
+3. Eject the disk image, then open Cadence from Applications.
 
-The app is not yet notarised. If macOS blocks it, approve it in **System Settings → Privacy & Security** after trying to open it.
+A ZIP download is also available. Until the first release is published, download **Cadence-release-packages** from the latest successful [GitHub Actions run](https://github.com/XDanfr/Cadence/actions/workflows/build.yml); sign in to GitHub to access artifacts.
+
+The app is not yet notarised. If macOS blocks it, choose **System Settings → Privacy & Security → Open Anyway** after trying to open it, then confirm. No system-wide security changes are needed.
 
 Notification access is optional. Request it during setup or in **Settings → Alerts**, where you can check access and send a test reminder. Timer controls and in-app alert sounds work independently of notification permission.
 

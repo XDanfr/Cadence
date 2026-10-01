@@ -1,0 +1,47 @@
+name: Prepare Cadence release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Match release tag to app version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python3 - <<'PY'
+          import os, plistlib, re
+          tag = os.environ['RELEASE_TAG']
+          with open('Resources/Info.plist', 'rb') as file:
+              version = plistlib.load(file)['CFBundleShortVersionString']
+          if not re.fullmatch(r'v\d+\.\d+\.\d+', tag) or tag != 'v' + version:
+              raise SystemExit(f'Tag {tag!r} must match the app version v{version}')
+          PY
+  build:
+    needs: validate
+    uses: ./.github/workflows/build.yml
+    permissions:
+      contents: read
+  draft:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: Cadence-release-packages
+          path: release
+      - name: Create draft release with DMG, ZIP and checksums
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" release/* \
+            --draft --verify-tag --title "Cadence ${RELEASE_TAG#v}" \
+            --generate-notes --notes-file docs/release-notes.md

@@ -20,6 +20,7 @@ else
   cp -R dist/compiled-assets/Resources/. dist/Cadence.app/Contents/Resources/
   cp dist/compiled-assets/asset-info.plist dist/asset-info.plist
 fi
+cp LICENSE dist/Cadence.app/Contents/Resources/LICENSE
 python3 scripts/merge-asset-info.py
 swift scripts/export-icon-layers.swift
 test -s dist/Cadence.app/Contents/Resources/Assets.car
