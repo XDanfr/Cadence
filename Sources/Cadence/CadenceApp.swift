@@ -172,12 +172,28 @@ struct MenuPanel: View {
             HStack { Text("Cadence").font(.headline); Spacer(); Text(model.state.phase.title).foregroundStyle(.secondary) }
             Text(model.clock).font(.system(size: 46, weight: .light, design: .rounded)).monospacedDigit()
             if !model.state.task.isEmpty { Text(model.state.task).font(.caption).lineLimit(2) }
-            ProgressView(value: model.progress)
-            HStack { Button(model.running ? "Pause" : "Start") { model.toggle() }.buttonStyle(.borderedProminent); Button("Skip") { model.skip() }; Button("+5 min") { model.extend() } }
-            if model.alarmRinging { Button("Dismiss alarm") { model.stopAlarm() } }
+            ProgressView(value: model.progress).tint(model.accentColor)
+            HStack {
+                Button(model.running ? "Pause" : "Start") { model.toggle() }
+                    .buttonStyle(.borderedProminent)
+                    .tint(model.accentColor)
+                Button("Skip") { model.skip() }
+                Button("+5 min") { model.extend() }
+            }
+            if model.alarmRinging {
+                Button("Dismiss alarm") { model.stopAlarm() }
+            }
             Divider()
-            HStack { Button("Open Cadence") { openWindow(id: "main"); NSApp.activate(ignoringOtherApps: true) }; Spacer(); SettingsLink { Image(systemName: "gearshape") } }
-            Button("Quit Cadence") { model.save(); NSApp.terminate(nil) }.font(.caption).foregroundStyle(.secondary)
-        }.padding(22).frame(width: 300)
+            HStack { Button("Open Cadence") { openWindow(id: "main"); NSApp.activate(ignoringOtherApps: true) }; Spacer(); SettingsLink { Image(systemName: "gearshape") }.help("Settings") }
+            Button("Quit Cadence") { model.save(); NSApp.terminate(nil) }
+                .buttonStyle(.plain)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .buttonStyle(.bordered)
+        .tint(.secondary)
+        .foregroundStyle(.primary)
+        .padding(22)
+        .frame(width: 300)
     }
 }
